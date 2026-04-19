@@ -2,7 +2,8 @@
         const container = document.getElementById('game-container');
         const player = document.getElementById('player');
         const scoreElement = document.getElementById('score');
-        const highscoreElement = document.getElementById('highscore')
+        const highscoreElement = document.getElementById('highscore');
+        const highscoreDisplay = document.getElementById('highscore-display');
         const uiScreen = document.getElementById('ui-screen');
         const startBtn = document.getElementById('start-btn');
         const gameTitle = document.getElementById('game-title');
@@ -15,16 +16,16 @@
         let highscore = 0;
         let startTime = 0;
         let playerX = 185;
-        const playerSpeed = 6;
+        const playerSpeed = 4;
         let enemies = [];
         let animationId;
-        let keys = {}; // lenyomott gombok tárolására
+        let keys = {}; // aktív gombok
 
-        // Gombnyomások figyelése
+        // gombnyomás
         window.addEventListener('keydown', (e) => keys[e.key] = true);
         window.addEventListener('keyup', (e) => keys[e.key] = false);
 
-        // Gomb esemény
+        // indítás
         startBtn.addEventListener('click', startGame);
 
         function startGame() {
@@ -33,12 +34,14 @@
             playerX = 185;
             player.style.left = playerX + 'px';
             
-            // Korábbi ellenfelek törlése
+            // piros négyzetek törlése
             enemies.forEach(enemy => enemy.element.remove());
             enemies = [];
             
             // UI eltüntetése
             uiScreen.classList.add('hidden');
+            highscoreDisplay.classList.remove('hidden');
+            highscoreElement.textContent = highscore;
             
             // Időmérés indítása
             startTime = performance.now();
@@ -51,11 +54,19 @@
             isPlaying = false;
             cancelAnimationFrame(animationId); // Játék megállítása
             
+            // Rekord frissítése, ha új legjobb pontszám
+            const finalScore = Math.floor(score);
+            if (finalScore > highscore) {
+                highscore = finalScore;
+                highscoreElement.textContent = highscore;
+            }
+            
             // UI megjelenítése
             uiScreen.classList.remove('hidden');
+            highscoreDisplay.classList.remove('hidden');
             gameTitle.textContent = "Játék Vége!";
             finalScoreText.classList.remove('hidden');
-            finalScoreValue.textContent = Math.floor(score);
+            finalScoreValue.textContent = finalScore;
             startBtn.textContent = "Újraindítás";
             
         }
@@ -67,7 +78,7 @@
             score = (currentTime - startTime) / 100;
             scoreElement.textContent = Math.floor(score);
 
-            // Játékos mozgatása (figyelve a falakra)
+            // játékos mozgatása
             if ((keys['ArrowLeft'] || keys['a'] || keys['A']) && playerX > 0) {
                 playerX -= playerSpeed;
             }
@@ -76,7 +87,7 @@
             }
             player.style.left = playerX + 'px';
 
-            // Új ellenfelek generálása (véletlenszerűen)
+            // ellenfelek generálása (véletlenszerűen)
             // Ahogy nő a pontszám, minimálisan nőhet a generálási esély, de most egy fix 4%-ot használunk frame-enként
             if (Math.random() < 0.04) {
                 const enemyEl = document.createElement('div');
@@ -92,7 +103,6 @@
                 });
             }
 
-            // Ellenfelek mozgatása és ütközésvizsgálat
             for (let i = 0; i < enemies.length; i++) {
                 let enemy = enemies[i];
                 
