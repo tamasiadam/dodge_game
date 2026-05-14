@@ -87,8 +87,8 @@
             }
             player.style.left = playerX + 'px';
 
-            // ellenfelek generálása (véletlenszerűen)
-            // Ahogy nő a pontszám, minimálisan nőhet a generálási esély, de most egy fix 4%-ot használunk frame-enként
+            // ellenfelek generálása
+    
             if (Math.random() < 0.04) {
                 const enemyEl = document.createElement('div');
                 enemyEl.classList.add('enemy');
@@ -106,21 +106,18 @@
             for (let i = 0; i < enemies.length; i++) {
                 let enemy = enemies[i];
                 
-                // A sebesség enyhén nő az idő múlásával a kihívás érdekében
+                // sebesség nő az idő múlásával
                 let fallSpeed = 4 + (score / 150); 
                 enemy.y += fallSpeed;
                 enemy.element.style.top = enemy.y + 'px';
 
-                // Ütközésvizsgálat (AABB - Axis-Aligned Bounding Box)
-                // A játékos Y pozíciója fix: a 500px magas dobozban az aljától 20px-re van, 30px magas.
-                // Tehát a játékos teteje Y = 450, alja Y = 480.
                 if (
                     playerX < enemy.x + 30 &&       // Játékos bal széle túllóg az ellenfél jobb szélén
                     playerX + 30 > enemy.x &&       // Játékos jobb széle túllóg az ellenfél bal szélén
                     450 < enemy.y + 30 &&           // Játékos teteje fentebb van, mint az ellenfél alja
                     480 > enemy.y                   // Játékos alja lentebb van, mint az ellenfél teteje
                 ) {
-                    endGame(); // Ha minden igaz, összeértek!
+                    endGame();
                     return; 
                 }
 
@@ -128,7 +125,7 @@
                 if (enemy.y > container.clientHeight) {
                     enemy.element.remove();
                     enemies.splice(i, 1);
-                    i--; // Visszaléptetjük az indexet, mivel töröltünk egy elemet a tömbből
+                    i--;
                 }
             }
 
